@@ -1,7 +1,7 @@
 # -JMETER
 最近需要用jmeter测试火车票，采集微服务系统的负载基准数据
 
-环境：centos8、jdk
+环境：centos8、jdk1.8
 
         【注】
         jdk一定要用官方版本，openjdk不可，卸载！！！
