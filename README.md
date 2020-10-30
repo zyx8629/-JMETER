@@ -14,6 +14,7 @@
         grafana(数据可视化)
 
 Step 1:jmeter 安装
+
  1、下载 
  
         wget https://mirrors.bfsu.edu.cn/apache//jmeter/binaries/apache-jmeter-5.3.tgz 【下载到自己喜欢的目录也行】
@@ -21,6 +22,7 @@ Step 1:jmeter 安装
 
         tar -xzvf apache-jmeter-5.3.tgz
 3、配环境 
+
 vim /etc/profile
 
         export JMETER=/.../apache-jmeter-5.3 【写自己的路径】
