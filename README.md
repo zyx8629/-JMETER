@@ -4,7 +4,7 @@
 环境：centos8、jdk1.8
 
         【注】
-        jdk一定要用官方版本，openjdk不可，卸载！！！
+        jdk一定要用官方版本，openjdk不可，卸载！！！【别卸载，修改路径吧还是，可能有依赖存在】
         重装后记得配环境 /etc/profile
 
 下载：
@@ -13,7 +13,7 @@
         influxdb(数据库)
         grafana(数据可视化)
 
-Step 1:jmeter 安装
+# Step 1:Jmeter 安装
 
  1、下载 
  
@@ -35,7 +35,7 @@ vim /etc/profile
 
         jmeter -version
 
-Step 2:influxdb(数据库) 安装与配置
+# Step 2:influxdb(数据库) 安装与配置
 
 1、下载
 
@@ -75,7 +75,7 @@ Step 2:influxdb(数据库) 安装与配置
         mkdir -p /usr/local/influxdb/
         chown -R influxdb:influxdb /usr/local/influxdb/
 
-5、修改完成之后，可以使用以下命令启动influxDB服务，两种方法：
+5、修改完成之后，可以使用以下命令启动 influxDB服务，两种方法：
 
         A、influxd -config /etc/influxdb/influxdb.conf
 
@@ -87,8 +87,15 @@ Step 2:influxdb(数据库) 安装与配置
           influxDB的tcp端口：8088
           查看端口有没有起来
           [root@jmeter ~]# netstat -anp|grep 8088
-        
-Step3: grafana 下载和安装
+          
+          特别说明：
+             「
+                新版本 influxdb没有UI展示了好像吧·····😄我是没调出来
+                8086端口：Grafana用来从数据库取数据的端口
+                2003端口：刚刚设置的，Jmeter往数据库发数据的端口
+                                                           」
+
+# Step 3: grafana 下载和安装
 
         官网：https://grafana.com/grafana/download
         下载地址：https://s3-us-west-2.amazonaws.com/grafana-releases/release/grafana-5.2.1-1.x86_64.rpm
@@ -99,3 +106,18 @@ Step3: grafana 下载和安装
 
         浏览器访问：http://IP:3000/login
         grafana的默认用户名密码都是admin，第一次登录会要求更改密码
+        
+# Step 4：Jmeter添加并配置 BackendListener 连接 influxdb数据库
+
+        Implementatin是 GraphiteBackendListenerClient ，每个配置项的含义：
+        1、graphiteHost：InfluxDB安装的服务器的ip
+        2、graphitePort：端口；默认就是2003，除非你自己安装InfluxDB时设置了其他端口是哦（可见上面安装InfluxDB后关于graphite的配置）
+        3、rootMetricsPrefix：指标的根前缀；将测试结果存入数据库时，不同指标会生成不同表，但这些表都最好要有一个共同的前缀，这个就是了；后面会讲到不同的指标的含义（重点哦）
+        4、summaryOnly：当你线程组有多个请求又想知道每个请求的结果数据时，最好填false，因为true只会返回所有请求的集合数据报告，不会输出每条请求的数据报告
+        5、samplersList：取样器列表；想收集哪些请求就填哪些，最好用正则去匹配，减轻工作量
+        6、useRegexpForSamplersList：是否使用正则；如果true则使用，samplersList里可以匹配正则表达式
+        7、percentiles：百分比；即类似聚合报告里90% Line，95% Line，99% Line的数据；倘若想要99.9时，需要写成【99_9】，用下划线代替点
+
+# Step 5:配置 Grafana
+
+        参考：https://www.cnblogs.com/poloyy/p/12219145.html
